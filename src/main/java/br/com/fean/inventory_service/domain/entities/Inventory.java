@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Entity
 @NoArgsConstructor
@@ -17,7 +19,10 @@ public class Inventory {
     private Integer id;
 
     @Column(nullable = false)
-    private String productCode;
+    private UUID productCode;
+
+    @Column(nullable = false)
+    private String internalCode;
 
     @Column(nullable = false)
     private Integer available;

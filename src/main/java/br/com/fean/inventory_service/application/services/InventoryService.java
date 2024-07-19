@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static br.com.fean.inventory_service.domain.enums.ESagaStatus.*;
 
@@ -55,7 +56,7 @@ public class InventoryService {
                 .getPayload()
                 .getProducts()
                 .forEach(product -> {
-                    var inventory = findInventoryByProductCode(String.valueOf(product.getProduct().getCode()));
+                    var inventory = findInventoryByProductCode(product.getProduct().getCode());
                     var orderInventory = createOrderInventory(event, product, inventory);
                     orderInventoryRepository.save(orderInventory);
                 });
@@ -77,7 +78,7 @@ public class InventoryService {
 
     private void updateInventory(Order order) {
         order.getProducts().forEach(product -> {
-            var inventory = findInventoryByProductCode(String.valueOf(product.getProduct().getCode()));
+            var inventory = findInventoryByProductCode(product.getProduct().getCode());
             checkInventory(inventory.getAvailable(), product.getQuantity());
             inventory.setAvailable(inventory.getAvailable() - product.getQuantity());
             inventoryRepository.save(inventory);
@@ -137,7 +138,7 @@ public class InventoryService {
                 });
     }
 
-    private Inventory findInventoryByProductCode(String productCode) {
+    private Inventory findInventoryByProductCode(UUID productCode) {
         return inventoryRepository
                 .findByProductCode(productCode)
                 .orElseThrow(() -> new ValidationException("Inventory not found by informed product."));
